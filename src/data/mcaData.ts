@@ -427,3 +427,4 @@ export const STORY_SLIDES: StorySlide[] = [
     quote: 'The generational and educational sorting maps directly to the fault lines of modern Thai civic movements.'
   }
 ];
+

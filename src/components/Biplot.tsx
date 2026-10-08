@@ -918,3 +918,4 @@ export const Biplot: React.FC<BiplotProps> = ({
     </div>
   );
 };
+

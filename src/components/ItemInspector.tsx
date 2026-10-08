@@ -186,3 +186,4 @@ export const ItemInspector: React.FC<ItemInspectorProps> = ({
     </div>
   );
 };
+

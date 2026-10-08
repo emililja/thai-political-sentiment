@@ -63,3 +63,4 @@ export interface StorySlide {
   insightBadge: string;
   quote?: string;
 }
+

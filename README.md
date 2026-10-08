@@ -109,3 +109,4 @@ The repository includes a ready-to-run GitHub Actions workflow in [`.github/work
 - **Original Data**: World Values Survey (WVS) Wave 7 (Thailand Representative Sample, $N \approx 1,500$).
 - **R Analytics Script**: [`politics_analytics.R`](politics_analytics.R) (uses `FactoMineR`, `haven`, `factoextra`, `jsonlite`).
 - **Payload**: [`thai_values_mca.json`](thai_values_mca.json).
+
