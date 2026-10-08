@@ -1,0 +1,329 @@
+{
+  "variance": {
+    "dim1": [14.99],
+    "dim2": [13.31]
+  },
+  "categories": [
+    {
+      "id": "Defend Society",
+      "dim1": 0.5912,
+      "dim2": 0.0935,
+      "contrib_dim1": 2.79,
+      "contrib_dim2": 0.08,
+      "cos2_dim1": 0.053,
+      "cos2_dim2": 0.001
+    },
+    {
+      "id": "Gradual Reform",
+      "dim1": 0.186,
+      "dim2": -0.307,
+      "contrib_dim1": 1.15,
+      "contrib_dim2": 3.54,
+      "cos2_dim1": 0.042,
+      "cos2_dim2": 0.115,
+      "domain": "Regime & Authority"
+    },
+    {
+      "id": "Radical Change",
+      "dim1": -0.5668,
+      "dim2": 0.4931,
+      "contrib_dim1": 6.19,
+      "contrib_dim2": 5.28,
+      "cos2_dim1": 0.15,
+      "cos2_dim2": 0.113
+    },
+    {
+      "id": "Army Rule: Bad",
+      "dim1": 0.3288,
+      "dim2": 0.7846,
+      "contrib_dim1": 2.45,
+      "contrib_dim2": 15.7,
+      "cos2_dim1": 0.064,
+      "cos2_dim2": 0.367,
+      "domain": "Regime & Authority"
+    },
+    {
+      "id": "Army Rule: Good",
+      "dim1": -0.1961,
+      "dim2": -0.4678,
+      "contrib_dim1": 1.46,
+      "contrib_dim2": 9.36,
+      "cos2_dim1": 0.064,
+      "cos2_dim2": 0.367,
+      "domain": "Regime & Authority"
+    },
+    {
+      "id": "Leader: Bad",
+      "dim1": 0.3028,
+      "dim2": 1.9823,
+      "contrib_dim1": 0.47,
+      "contrib_dim2": 22.62,
+      "cos2_dim1": 0.008,
+      "cos2_dim2": 0.362,
+      "domain": "Regime & Authority"
+    },
+    {
+      "id": "Leader: Good",
+      "dim1": -0.0279,
+      "dim2": -0.1825,
+      "contrib_dim1": 0.04,
+      "contrib_dim2": 2.08,
+      "cos2_dim1": 0.008,
+      "cos2_dim2": 0.362,
+      "domain": "Regime & Authority"
+    },
+    {
+      "id": "Army Coup: Compatible",
+      "dim1": 0.1675,
+      "dim2": 0.1988,
+      "contrib_dim1": 0.55,
+      "contrib_dim2": 0.87,
+      "cos2_dim1": 0.013,
+      "cos2_dim2": 0.019,
+      "domain": "Regime & Authority"
+    },
+    {
+      "id": "Army Coup: Non-Dem",
+      "dim1": -0.0793,
+      "dim2": -0.0941,
+      "contrib_dim1": 0.26,
+      "contrib_dim2": 0.41,
+      "cos2_dim1": 0.013,
+      "cos2_dim2": 0.019,
+      "domain": "Regime & Authority"
+    },
+    {
+      "id": "Gay: Justifiable",
+      "dim1": 0.7823,
+      "dim2": -0.2495,
+      "contrib_dim1": 15.43,
+      "contrib_dim2": 1.77,
+      "cos2_dim1": 0.435,
+      "cos2_dim2": 0.044,
+      "domain": "Personal & LGBTQ+ Autonomy"
+    },
+    {
+      "id": "Gay: Never/Rarely",
+      "dim1": -0.5565,
+      "dim2": 0.1775,
+      "contrib_dim1": 10.97,
+      "contrib_dim2": 1.26,
+      "cos2_dim1": 0.435,
+      "cos2_dim2": 0.044,
+      "domain": "Personal & LGBTQ+ Autonomy"
+    },
+    {
+      "id": "Gay Parents: Agree",
+      "dim1": -0.1474,
+      "dim2": -0.5754,
+      "contrib_dim1": 0.59,
+      "contrib_dim2": 10.18,
+      "cos2_dim1": 0.018,
+      "cos2_dim2": 0.271,
+      "domain": "Personal & LGBTQ+ Autonomy"
+    },
+    {
+      "id": "Gay Parents: Disagree/Neutral",
+      "dim1": 0.1207,
+      "dim2": 0.4713,
+      "contrib_dim1": 0.49,
+      "contrib_dim2": 8.34,
+      "cos2_dim1": 0.018,
+      "cos2_dim2": 0.271,
+      "domain": "Personal & LGBTQ+ Autonomy"
+    },
+    {
+      "id": "Men Lead: Agree",
+      "dim1": -0.463,
+      "dim2": -0.2139,
+      "contrib_dim1": 6.36,
+      "contrib_dim2": 1.53,
+      "cos2_dim1": 0.205,
+      "cos2_dim2": 0.044,
+      "domain": "Gender Hierarchy"
+    },
+    {
+      "id": "Men Lead: Disagree",
+      "dim1": 0.4431,
+      "dim2": 0.2047,
+      "contrib_dim1": 6.08,
+      "contrib_dim2": 1.46,
+      "cos2_dim1": 0.205,
+      "cos2_dim2": 0.044,
+      "domain": "Gender Hierarchy"
+    },
+    {
+      "id": "Men Job: Agree",
+      "dim1": -0.5758,
+      "dim2": -0.2053,
+      "contrib_dim1": 6.46,
+      "contrib_dim2": 0.92,
+      "cos2_dim1": 0.157,
+      "cos2_dim2": 0.02,
+      "domain": "Gender Hierarchy"
+    },
+    {
+      "id": "Men Job: Disagree/Neutral",
+      "dim1": 0.2725,
+      "dim2": 0.0972,
+      "contrib_dim1": 3.06,
+      "contrib_dim2": 0.44,
+      "cos2_dim1": 0.157,
+      "cos2_dim2": 0.02,
+      "domain": "Gender Hierarchy"
+    },
+    {
+      "id": "Corrupt: High",
+      "dim1": 0.7083,
+      "dim2": 0.0136,
+      "contrib_dim1": 13.24,
+      "contrib_dim2": 0.01,
+      "cos2_dim1": 0.386,
+      "cos2_dim2": 0,
+      "domain": "Economy & Corruption"
+    },
+    {
+      "id": "Corrupt: Low/Mod",
+      "dim1": -0.5455,
+      "dim2": -0.0105,
+      "contrib_dim1": 10.19,
+      "contrib_dim2": 0,
+      "cos2_dim1": 0.386,
+      "cos2_dim2": 0,
+      "domain": "Economy & Corruption"
+    },
+    {
+      "id": "Welfare: Self-Reliance",
+      "dim1": -0.4763,
+      "dim2": 0.492,
+      "contrib_dim1": 6.34,
+      "contrib_dim2": 7.62,
+      "cos2_dim1": 0.194,
+      "cos2_dim2": 0.207,
+      "domain": "Economy & Corruption"
+    },
+    {
+      "id": "Welfare: State",
+      "dim1": 0.4077,
+      "dim2": -0.4211,
+      "contrib_dim1": 5.43,
+      "contrib_dim2": 6.53,
+      "cos2_dim1": 0.194,
+      "cos2_dim2": 0.207,
+      "domain": "Economy & Corruption"
+    }
+  ],
+  "supplementary": [
+    {
+      "id": "Center",
+      "dim1": 0.0333,
+      "dim2": -0.0987,
+      "vtest_dim1": 0.97,
+      "vtest_dim2": -2.87,
+      "group": "Ideology"
+    },
+    {
+      "id": "Left",
+      "dim1": -0.3491,
+      "dim2": -0.258,
+      "vtest_dim1": -3.77,
+      "vtest_dim2": -2.78,
+      "group": "Ideology"
+    },
+    {
+      "id": "No Ideology Label",
+      "dim1": 0.268,
+      "dim2": 0.061,
+      "vtest_dim1": 5.27,
+      "vtest_dim2": 1.2,
+      "group": "Ideology"
+    },
+    {
+      "id": "Right",
+      "dim1": -0.1971,
+      "dim2": 0.1992,
+      "vtest_dim1": -3.89,
+      "vtest_dim2": 3.93,
+      "group": "Ideology"
+    },
+    {
+      "id": "Female",
+      "dim1": 0.0739,
+      "dim2": -0.0876,
+      "vtest_dim1": 2.65,
+      "vtest_dim2": -3.14,
+      "group": "Gender"
+    },
+    {
+      "id": "Gender.NA",
+      "dim1": -0.2832,
+      "dim2": -0.4476,
+      "vtest_dim1": -0.8,
+      "vtest_dim2": -1.27
+    },
+    {
+      "id": "Male",
+      "dim1": -0.077,
+      "dim2": 0.1024,
+      "vtest_dim1": -2.52,
+      "vtest_dim2": 3.35,
+      "group": "Gender"
+    },
+    {
+      "id": "18-29",
+      "dim1": 0.1851,
+      "dim2": 0.1489,
+      "vtest_dim1": 2.54,
+      "vtest_dim2": 2.05,
+      "group": "Age"
+    },
+    {
+      "id": "30-49",
+      "dim1": -0.0404,
+      "dim2": -0.0961,
+      "vtest_dim1": -1.23,
+      "vtest_dim2": -2.92,
+      "group": "Age"
+    },
+    {
+      "id": "50+",
+      "dim1": -0.0182,
+      "dim2": 0.0511,
+      "vtest_dim1": -0.54,
+      "vtest_dim2": 1.51,
+      "group": "Age"
+    },
+    {
+      "id": "Edu: High",
+      "dim1": 0.3011,
+      "dim2": -0.174,
+      "vtest_dim1": 3.64,
+      "vtest_dim2": -2.1,
+      "group": "Education"
+    },
+    {
+      "id": "Edu: Low",
+      "dim1": -0.1126,
+      "dim2": 0.0425,
+      "vtest_dim1": -5.79,
+      "vtest_dim2": 2.19,
+      "group": "Education"
+    },
+    {
+      "id": "Edu: Mid",
+      "dim1": 0.2136,
+      "dim2": -0.0316,
+      "vtest_dim1": 3.54,
+      "vtest_dim2": -0.52,
+      "group": "Education"
+    },
+    {
+      "id": "Education.NA",
+      "dim1": 0.3888,
+      "dim2": -0.3672,
+      "vtest_dim1": 1.46,
+      "vtest_dim2": -1.38,
+      "group": "Education"
+    }
+  ]
+}
