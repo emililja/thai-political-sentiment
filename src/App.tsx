@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+import { IntroductionPage } from './components/IntroductionPage';
 import { Biplot } from './components/Biplot';
 import { RespondentScatterplot } from './components/RespondentScatterplot';
 import { DriverAnalytics } from './components/DriverAnalytics';
@@ -26,7 +27,7 @@ import {
 } from 'lucide-react';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'biplot' | 'scatterplot' | 'analytics' | 'data'>('biplot');
+  const [activeTab, setActiveTab] = useState<'intro' | 'biplot' | 'scatterplot' | 'analytics' | 'data'>('intro');
   const [selectedItem, setSelectedItem] = useState<MCACategory | SupplementaryCategory | null>(null);
   const [highlightCategoryIds, setHighlightCategoryIds] = useState<string[]>([]);
   const [highlightSupplementaryIds, setHighlightSupplementaryIds] = useState<string[]>([]);
@@ -36,6 +37,15 @@ export function App() {
   const handleSelectQuadrant = (q: number | null) => {
     setActiveQuadrantFilter(q);
     setSelectedItem(null);
+  };
+
+  const handleNavigateTab = (tab: 'biplot' | 'scatterplot' | 'analytics' | 'data', quadrant?: number | null) => {
+    if (quadrant !== undefined) {
+      setActiveQuadrantFilter(quadrant);
+      setSelectedItem(null);
+    }
+    setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -103,6 +113,14 @@ export function App() {
             </div>
           </div>
         </section>
+
+        {/* Tab 0: Introduction Page */}
+        {activeTab === 'intro' && (
+          <IntroductionPage
+            onNavigateTab={handleNavigateTab}
+            onOpenMethodology={() => setIsMethodologyOpen(true)}
+          />
+        )}
 
         {/* Tab 1: Interactive Biplot Map */}
         {activeTab === 'biplot' && (
@@ -173,14 +191,21 @@ export function App() {
                     })}
                   </div>
 
-                  {/* Teaser to Scatterplot */}
-                  <div className="pt-2 border-t border-slate-100">
+                  {/* Quick Links */}
+                  <div className="pt-2 border-t border-slate-100 space-y-2">
                     <button
                       onClick={() => setActiveTab('scatterplot')}
                       className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-700 to-red-600 hover:from-blue-800 hover:to-red-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-blue-900/10"
                     >
                       <Sparkles className="w-4 h-4" />
                       Explore Respondent Scatterplot ({mcaIndividuals.length} Samples)
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('intro')}
+                      className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-semibold text-xs flex items-center justify-center gap-2 transition"
+                    >
+                      <Info className="w-3.5 h-3.5 text-blue-700" />
+                      Read Report Introduction & Summary
                     </button>
                   </div>
                 </div>
@@ -204,7 +229,7 @@ export function App() {
           </div>
         )}
 
-        {/* Tab 2: Respondent Scatterplot (Replaced 4 insight section) */}
+        {/* Tab 2: Respondent Scatterplot */}
         {activeTab === 'scatterplot' && (
           <RespondentScatterplot />
         )}

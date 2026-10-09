@@ -1,5 +1,6 @@
-# 🇹🇭 Thai Political Values & Societal Cleavages
-### Interactive MCA Infographic | World Values Survey (Wave 7 Thailand)
+# 🇹🇭 Thailand Sociocultural Value Dimensions
+### Research Report & Interactive MCA Infographic | By Emily Suwanasing
+### World Values Survey (Wave 7 Thailand Sample)
 
 An interactive data journalism and political sociology infographic built with **React**, **TypeScript**, **Tailwind CSS**, and **Vite**, ready for deployment to **GitHub Pages**.
 

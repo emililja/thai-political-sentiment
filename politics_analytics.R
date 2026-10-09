@@ -1,5 +1,6 @@
 # ==============================================================================
-# Refined MCA: Thai Political Values & Personal Autonomy
+# Thailand Sociocultural Value Dimensions
+# Research Report by Emily Suwanasing
 # Wave 7 World Values Survey (Thailand Sample)
 # ==============================================================================
 

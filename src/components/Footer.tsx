@@ -6,10 +6,10 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <p className="font-semibold text-slate-800">
-            Thai Political Values & Societal Cleavages • Multiple Correspondence Analysis
+            Thailand Sociocultural Value Dimensions • Multiple Correspondence Analysis
           </p>
           <p className="mt-1 text-[11px] text-slate-500">
-            Based on the World Values Survey (WVS) Wave 7 cross-national dataset (Thailand, N≈1,500). Computed via FactoMineR in R.
+            Research Report by Emily Suwanasing • Based on the World Values Survey (WVS) Wave 7 (Thailand Sample, N ≈ 1,500). Computed via FactoMineR in R.
           </p>
         </div>
 
