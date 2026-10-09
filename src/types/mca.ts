@@ -44,10 +44,37 @@ export interface MCAVariance {
   total: number;
 }
 
+export interface MCAIndividual {
+  id: string;
+  dim1: number;
+  dim2: number;
+  gender: string | null;
+  age_group: string | null;
+  education: string | null;
+  ideology: string | null;
+}
+
+export interface MCAScatterplotConfig {
+  x: {
+    field: 'dim1';
+    label: string;
+  };
+  y: {
+    field: 'dim2';
+    label: string;
+  };
+  color: {
+    field: 'age_group';
+    label: string;
+  };
+}
+
 export interface MCAPayload {
   variance: MCAVariance;
   categories: MCACategory[];
   supplementary: SupplementaryCategory[];
+  individuals: MCAIndividual[];
+  scatterplot: MCAScatterplotConfig;
 }
 
 export interface StorySlide {
@@ -63,4 +90,3 @@ export interface StorySlide {
   insightBadge: string;
   quote?: string;
 }
-

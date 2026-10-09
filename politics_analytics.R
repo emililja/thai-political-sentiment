@@ -184,6 +184,27 @@ p_clean <- ggplot(var_coords, aes(x = `Dim 1`, y = `Dim 2`, label = Category)) +
 
 print(p_clean)
 
+# Extract individual coordinates and merge with demographics
+ind_coords <- as_tibble(res_mca$ind$coord[, 1:2]) %>%
+  rename(dim1 = `Dim 1`, dim2 = `Dim 2`) %>%
+  bind_cols(
+    thai_mca_clean %>% select(Gender, Age_Group, Education, Ideology_LeftRight)
+  )
+
+# Preview distribution
+p_ind <- ggplot(ind_coords, aes(x = dim1, y = dim2)) +
+  geom_density_2d_filled(alpha = 0.5) +
+  geom_point(aes(color = Age_Group), alpha = 0.25, size = 1) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  theme_minimal() +
+  labs(
+    title = "Thai Population Density on MCA Value Space",
+    x = "Dim 1: Traditional Agrarian vs. Cosmopolitan Modernity",
+    y = "Dim 2: Regime Deference vs. Democratic Proceduralism"
+  )
+print(p_ind)
+
 library(jsonlite)
 
 # 1. Active Category Coordinates & Metrics
@@ -220,15 +241,43 @@ export_supplementary <- tibble::tibble(
 
 # 3. Variance Explained (For Axis Labels)
 export_variance <- list(
-  dim1 = round(res_mca$eig[1, 2], 2),
-  dim2 = round(res_mca$eig[2, 2], 2)
+  dim1 = round(as.numeric(res_mca$eig[1, 2]), 2),
+  dim2 = round(as.numeric(res_mca$eig[2, 2]), 2)
 )
+
+# 4. Individual Coordinates (For Respondent Scatterplot)
+export_individuals <- ind_coords %>%
+  mutate(
+    id = paste0("respondent_", row_number()),
+    dim1 = round(as.numeric(dim1), 4),
+    dim2 = round(as.numeric(dim2), 4),
+    gender = as.character(Gender),
+    age_group = as.character(Age_Group),
+    education = as.character(Education),
+    ideology = as.character(Ideology_LeftRight)
+  ) %>%
+  select(id, dim1, dim2, gender, age_group, education, ideology)
 
 # Combine and write to JSON
 mca_payload <- list(
   variance = export_variance,
   categories = export_categories,
-  supplementary = export_supplementary
+  supplementary = export_supplementary,
+  individuals = export_individuals,
+  scatterplot = list(
+    x = list(
+      field = "dim1",
+      label = "Dim 1: Traditional Agrarian vs. Cosmopolitan Modernity"
+    ),
+    y = list(
+      field = "dim2",
+      label = "Dim 2: Regime Deference vs. Democratic Proceduralism"
+    ),
+    color = list(
+      field = "age_group",
+      label = "Age group"
+    )
+  )
 )
 
 write_json(mca_payload, "thai_values_mca.json", pretty = TRUE)
