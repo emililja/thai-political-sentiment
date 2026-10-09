@@ -108,7 +108,7 @@ export function App() {
               <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold block">Data Source</span>
               <div className="flex items-baseline space-x-1.5 mt-0.5">
                 <span className="text-xl font-extrabold text-slate-900 font-mono">WVS Wave 7</span>
-                <span className="text-[10px] text-slate-500">Thailand (2017–2022)</span>
+                <span className="text-[10px] text-slate-500">Thailand (2018 Sample)</span>
               </div>
             </div>
           </div>

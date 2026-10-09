@@ -43,7 +43,7 @@ export const MethodologyModal: React.FC<MethodologyModalProps> = ({ isOpen, onCl
                 </span>
               </div>
               <p className="text-xs text-slate-500">
-                Multiple Correspondence Analysis (MCA) on World Values Survey Wave 7 (Thailand Sample)
+                Multiple Correspondence Analysis (MCA) on World Values Survey Wave 7 (Thailand Sample, Conducted in 2018)
               </p>
             </div>
           </div>
@@ -194,11 +194,11 @@ export const MethodologyModal: React.FC<MethodologyModalProps> = ({ isOpen, onCl
                   4. Dataset Provenance & Timing
                 </h4>
                 <p>
-                  The dataset is drawn from the <strong>World Values Survey (WVS) Wave 7 (2017–2022)</strong> cross-national dataset (Version 6.0), filtering specifically for the Thailand representative sample (<code className="text-blue-700 font-mono bg-blue-50 px-1 py-0.5 rounded border border-blue-200">B_COUNTRY == 764</code> / <code className="text-blue-700 font-mono bg-blue-50 px-1 py-0.5 rounded border border-blue-200">THA</code>).
+                  The dataset is drawn from the <strong>World Values Survey (WVS) Wave 7</strong> cross-national dataset, filtering specifically for the Thailand representative sample surveyed in <strong>2018</strong> (<code className="text-blue-700 font-mono bg-blue-50 px-1 py-0.5 rounded border border-blue-200">B_COUNTRY == 764</code> / <code className="text-blue-700 font-mono bg-blue-50 px-1 py-0.5 rounded border border-blue-200">THA</code>).
                 </p>
                 <p>
                   The Thai sample comprises approximately 1,500 adult respondents interviewed through stratified multistage probability sampling. Complete cases for the 10 active items yield <strong>1,186 individual respondents</strong>. 
-                  While reflecting political sentiment during the COVID-19 pandemic and the close of Prime Minister Prayuth Chan-o-cha’s second term, this dataset provides the definitive empirical baseline explaining modern electoral alignments.
+                  Conducted in 2018, it provides a critical snapshot of political beliefs during Prime Minister Prayuth’s administration under the military junta following the 2014 coup, prior to the 2019 general election transition and the COVID-19 pandemic that began in late 2019, which together gave rise to today's political landscape.
                 </p>
               </div>
             </div>
@@ -523,8 +523,8 @@ export const MethodologyModal: React.FC<MethodologyModalProps> = ({ isOpen, onCl
               Academic & Data Citations
             </h4>
             <ul className="space-y-1 text-slate-600 text-[11px]">
-              <li>• Suwanasing, E. (2026). <em>Thailand Sociocultural Value Dimensions</em>. MCA Research Report on WVS Wave 7.</li>
-              <li>• World Values Survey Wave 7 (2020). Thailand Country Survey Dataset, World Values Survey Association.</li>
+              <li>• Suwanasing, E. (2026). <em>Thailand Sociocultural Value Dimensions: A Multiple Correspondence Analysis of Wave 7 World Values Survey</em>. Research Report.</li>
+              <li>• World Values Survey Association (2018). <em>World Values Survey Wave 7 (Thailand Country Survey)</em>. Fieldwork conducted in 2018.</li>
               <li>• Greenacre, M., & Blasius, J. (2006). <em>Multiple Correspondence Analysis and Related Methods</em>. Chapman and Hall/CRC.</li>
               <li>• Le Roux, B., & Rouanet, H. (2010). <em>Multiple Correspondence Analysis</em>. SAGE Publications.</li>
               <li>• Husson, F., Josse, J., Le, S., & Mazet, J. (2020). <em>FactoMineR: Multivariate Exploratory Data Analysis and Data Mining</em>. R package version 2.4.</li>

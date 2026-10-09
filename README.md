@@ -1,10 +1,10 @@
 # 🇹🇭 Thailand Sociocultural Value Dimensions
 ### Research Report & Interactive MCA Infographic | By Emily Suwanasing
-### World Values Survey (Wave 7 Thailand Sample)
+### World Values Survey (Wave 7 Thailand Sample, Conducted in 2018)
 
 An interactive data journalism and political sociology infographic built with **React**, **TypeScript**, **Tailwind CSS**, and **Vite**, ready for deployment to **GitHub Pages**.
 
-Based on a refined **Multiple Correspondence Analysis (MCA)** of the **World Values Survey (Wave 7)** representative sample for Thailand (N ≈ 1,500).
+Based on a refined **Multiple Correspondence Analysis (MCA)** of the **World Values Survey (Wave 7)** representative sample for Thailand ($N \approx 1,500$, surveyed in 2018 under the Prayuth military junta administration).
 
 ---
 

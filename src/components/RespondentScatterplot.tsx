@@ -239,7 +239,7 @@ export const RespondentScatterplot: React.FC = () => {
                 Microdata Layer
               </span>
               <span className="text-xs font-semibold text-slate-500">
-                WVS Wave 7 • Representative Thai Sample
+                WVS Wave 7 (2018) • Representative Thai Sample
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">

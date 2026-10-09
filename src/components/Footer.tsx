@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
             Thailand Sociocultural Value Dimensions • Multiple Correspondence Analysis
           </p>
           <p className="mt-1 text-[11px] text-slate-500">
-            Research Report by Emily Suwanasing • Based on the World Values Survey (WVS) Wave 7 (Thailand Sample, N ≈ 1,500). Computed via FactoMineR in R.
+            Research Report by Emily Suwanasing • Based on the World Values Survey (WVS) Wave 7 (Thailand Sample, Conducted in 2018, N ≈ 1,500). Computed via FactoMineR in R.
           </p>
         </div>
 

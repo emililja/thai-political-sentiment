@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Thailand Sociocultural Value Dimensions
               </h1>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 hidden sm:inline-block">
-                WVS Wave 7
+                WVS Wave 7 (2018)
               </span>
             </div>
             <p className="text-xs text-slate-500">
