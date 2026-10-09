@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { mcaCategories, mcaSupplementary, DOMAIN_COLORS } from '../data/mcaData';
+import { mcaCategories, mcaSupplementary, DOMAIN_COLORS, DEMOGRAPHIC_COLORS } from '../data/mcaData';
 import { MCACategory, SupplementaryCategory } from '../types/mca';
-import { Download, Search, ArrowUpDown, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, Search, ArrowUpDown } from 'lucide-react';
 
 interface DataTableProps {
   onSelectItem: (item: MCACategory | SupplementaryCategory) => void;
@@ -124,9 +124,9 @@ export const DataTable: React.FC<DataTableProps> = ({ onSelectItem }) => {
   return (
     <div className="w-full space-y-4">
       {/* Control bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
         <div className="flex items-center space-x-2">
-          <div className="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+          <div className="inline-flex rounded-lg bg-slate-100 p-1 border border-slate-200 text-xs">
             <button
               onClick={() => {
                 setActiveDataset('categories');
@@ -134,8 +134,8 @@ export const DataTable: React.FC<DataTableProps> = ({ onSelectItem }) => {
               }}
               className={`px-3 py-1.5 rounded-md font-semibold transition ${
                 activeDataset === 'categories'
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-700 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Active Survey Attitudes ({mcaCategories.length})
@@ -147,8 +147,8 @@ export const DataTable: React.FC<DataTableProps> = ({ onSelectItem }) => {
               }}
               className={`px-3 py-1.5 rounded-md font-semibold transition ${
                 activeDataset === 'supplementary'
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-700 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Supplementary Demographics ({mcaSupplementary.length})
@@ -158,149 +158,149 @@ export const DataTable: React.FC<DataTableProps> = ({ onSelectItem }) => {
 
         <div className="flex items-center space-x-2">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Search table rows..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-xs pl-8 pr-3 py-1.5 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-rose-500/60 w-52"
+              className="bg-slate-50 border border-slate-200 text-xs pl-8 pr-3 py-1.5 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white w-52"
             />
           </div>
 
           <button
             onClick={handleDownloadCsv}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs font-medium flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1.5 shadow-sm"
             title="Download table data as CSV"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-3.5 h-3.5 text-blue-700" />
             Export CSV
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           {activeDataset === 'categories' ? (
             <table className="w-full text-xs text-left">
-              <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800 select-none">
+              <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
                 <tr>
                   <th 
-                    className="py-3 px-4 cursor-pointer hover:text-slate-200"
+                    className="py-3 px-4 cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('id')}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Category</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('domain')}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Domain</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th className="py-3 px-2 text-center">Item</th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('dim1')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>Dim 1</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('dim2')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>Dim 2</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('contrib_dim1')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>Contrib D1</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('contrib_dim2')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>Contrib D2</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('contrib_total')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>Total Contrib</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('cos2_total')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>Cos²</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th className="py-3 px-3 text-center">Quad</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/70 font-mono">
+              <tbody className="divide-y divide-slate-100 font-mono">
                 {processedCategories.map(cat => {
                   const config = DOMAIN_COLORS[cat.domain];
                   return (
                     <tr
                       key={cat.id}
                       onClick={() => onSelectItem(cat)}
-                      className="hover:bg-slate-800/60 cursor-pointer transition"
+                      className="hover:bg-blue-50/40 cursor-pointer transition"
                     >
-                      <td className="py-3 px-4 font-sans font-bold text-slate-100">
+                      <td className="py-3 px-4 font-sans font-bold text-slate-900">
                         {cat.id}
                       </td>
                       <td className="py-3 px-3 font-sans">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${config.badgeBg} ${config.badgeBorder} ${config.text}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${config.badgeBg} ${config.badgeBorder} ${config.text}`}>
                           {cat.domain}
                         </span>
                       </td>
-                      <td className="py-3 px-2 text-center text-slate-400 font-sans text-[11px]">
+                      <td className="py-3 px-2 text-center text-slate-500 font-sans text-[11px]">
                         {cat.wvsQuestionCode}
                       </td>
-                      <td className="py-3 px-3 text-center text-slate-300">
+                      <td className="py-3 px-3 text-center text-slate-700">
                         {cat.dim1 > 0 ? `+${cat.dim1.toFixed(3)}` : cat.dim1.toFixed(3)}
                       </td>
-                      <td className="py-3 px-3 text-center text-slate-300">
+                      <td className="py-3 px-3 text-center text-slate-700">
                         {cat.dim2 > 0 ? `+${cat.dim2.toFixed(3)}` : cat.dim2.toFixed(3)}
                       </td>
-                      <td className="py-3 px-3 text-center text-slate-300">
+                      <td className="py-3 px-3 text-center text-slate-700">
                         {cat.contrib_dim1.toFixed(2)}%
                       </td>
-                      <td className="py-3 px-3 text-center text-slate-300">
+                      <td className="py-3 px-3 text-center text-slate-700">
                         {cat.contrib_dim2.toFixed(2)}%
                       </td>
-                      <td className="py-3 px-3 text-center font-bold text-rose-400">
+                      <td className="py-3 px-3 text-center font-bold text-red-600">
                         {cat.contrib_total.toFixed(2)}%
                       </td>
-                      <td className="py-3 px-3 text-center text-amber-400">
+                      <td className="py-3 px-3 text-center font-bold text-blue-700">
                         {cat.cos2_total.toFixed(3)}
                       </td>
-                      <td className="py-3 px-3 text-center font-sans font-semibold text-slate-400">
+                      <td className="py-3 px-3 text-center font-sans font-semibold text-slate-500">
                         Q{cat.quadrant}
                       </td>
                     </tr>
@@ -310,105 +310,108 @@ export const DataTable: React.FC<DataTableProps> = ({ onSelectItem }) => {
             </table>
           ) : (
             <table className="w-full text-xs text-left">
-              <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800 select-none">
+              <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
                 <tr>
                   <th 
-                    className="py-3 px-4 cursor-pointer hover:text-slate-200"
+                    className="py-3 px-4 cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('id')}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Demographic Category</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('group')}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Group</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('dim1')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>Dim 1</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('dim2')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>Dim 2</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('vtest_dim1')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>V-Test (Dim 1)</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th 
-                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-200"
+                    className="py-3 px-3 text-center cursor-pointer hover:text-slate-900"
                     onClick={() => handleSort('vtest_dim2')}
                   >
                     <div className="flex items-center justify-center space-x-1">
                       <span>V-Test (Dim 2)</span>
-                      <ArrowUpDown className="w-3 h-3" />
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th className="py-3 px-3 text-center">Quad</th>
                   <th className="py-3 px-4">Description</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/70 font-mono">
-                {processedSupplementary.map(sup => (
-                  <tr
-                    key={sup.id}
-                    onClick={() => onSelectItem(sup)}
-                    className="hover:bg-slate-800/60 cursor-pointer transition"
-                  >
-                    <td className="py-3 px-4 font-sans font-bold text-slate-100">
-                      {sup.id}
-                    </td>
-                    <td className="py-3 px-3 font-sans">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-cyan-950 text-cyan-300 border border-cyan-800">
-                        {sup.group}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-center text-slate-300">
-                      {sup.dim1 > 0 ? `+${sup.dim1.toFixed(3)}` : sup.dim1.toFixed(3)}
-                    </td>
-                    <td className="py-3 px-3 text-center text-slate-300">
-                      {sup.dim2 > 0 ? `+${sup.dim2.toFixed(3)}` : sup.dim2.toFixed(3)}
-                    </td>
-                    <td className="py-3 px-3 text-center font-bold">
-                      <span className={sup.isSignificantDim1 ? 'text-emerald-400' : 'text-slate-500'}>
-                        {sup.vtest_dim1 > 0 ? `+${sup.vtest_dim1}` : sup.vtest_dim1}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-center font-bold">
-                      <span className={sup.isSignificantDim2 ? 'text-emerald-400' : 'text-slate-500'}>
-                        {sup.vtest_dim2 > 0 ? `+${sup.vtest_dim2}` : sup.vtest_dim2}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-center font-sans font-semibold text-slate-400">
-                      Q{sup.quadrant}
-                    </td>
-                    <td className="py-3 px-4 font-sans text-slate-400 text-[11px]">
-                      {sup.description}
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-slate-100 font-mono">
+                {processedSupplementary.map(sup => {
+                  const config = DEMOGRAPHIC_COLORS[sup.group];
+                  return (
+                    <tr
+                      key={sup.id}
+                      onClick={() => onSelectItem(sup)}
+                      className="hover:bg-blue-50/40 cursor-pointer transition"
+                    >
+                      <td className="py-3 px-4 font-sans font-bold text-slate-900">
+                        {sup.id}
+                      </td>
+                      <td className="py-3 px-3 font-sans">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${config.border} ${config.text} ${config.iconBg}`}>
+                          {sup.group}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-center text-slate-700">
+                        {sup.dim1 > 0 ? `+${sup.dim1.toFixed(3)}` : sup.dim1.toFixed(3)}
+                      </td>
+                      <td className="py-3 px-3 text-center text-slate-700">
+                        {sup.dim2 > 0 ? `+${sup.dim2.toFixed(3)}` : sup.dim2.toFixed(3)}
+                      </td>
+                      <td className="py-3 px-3 text-center font-bold">
+                        <span className={sup.isSignificantDim1 ? 'text-blue-700' : 'text-slate-400'}>
+                          {sup.vtest_dim1 > 0 ? `+${sup.vtest_dim1}` : sup.vtest_dim1}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-center font-bold">
+                        <span className={sup.isSignificantDim2 ? 'text-blue-700' : 'text-slate-400'}>
+                          {sup.vtest_dim2 > 0 ? `+${sup.vtest_dim2}` : sup.vtest_dim2}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-center font-sans font-semibold text-slate-500">
+                        Q{sup.quadrant}
+                      </td>
+                      <td className="py-3 px-4 font-sans text-slate-600 text-[11px]">
+                        {sup.description}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
@@ -417,4 +420,3 @@ export const DataTable: React.FC<DataTableProps> = ({ onSelectItem }) => {
     </div>
   );
 };
-

@@ -52,19 +52,20 @@ export interface MCAIndividual {
   age_group: string | null;
   education: string | null;
   ideology: string | null;
+  quadrant?: 1 | 2 | 3 | 4;
 }
 
 export interface MCAScatterplotConfig {
   x: {
-    field: 'dim1';
+    field: string;
     label: string;
   };
   y: {
-    field: 'dim2';
+    field: string;
     label: string;
   };
   color: {
-    field: 'age_group';
+    field: string;
     label: string;
   };
 }

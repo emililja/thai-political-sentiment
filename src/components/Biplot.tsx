@@ -14,16 +14,10 @@ import {
   mcaVariance
 } from '../data/mcaData';
 import { 
-  ZoomIn, 
-  ZoomOut, 
-  RotateCcw, 
   Download, 
   Layers, 
-  Filter, 
   Crosshair, 
-  Eye, 
   Sparkles,
-  Info,
   Maximize2
 } from 'lucide-react';
 
@@ -47,12 +41,10 @@ export const Biplot: React.FC<BiplotProps> = ({
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   // View & Filter states
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [focusCore, setFocusCore] = useState<boolean>(false);
   const [sizeMetric, setSizeMetric] = useState<'contrib' | 'cos2' | 'equal'>('contrib');
   const [showSupplementary, setShowSupplementary] = useState<boolean>(true);
   const [showConnectingVectors, setShowConnectingVectors] = useState<boolean>(true);
-  const [showRaysToOrigin, setShowRaysToOrigin] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [hoveredItem, setHoveredItem] = useState<MCACategory | SupplementaryCategory | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
@@ -66,7 +58,7 @@ export const Biplot: React.FC<BiplotProps> = ({
   });
 
   // Demographic group visibility
-  const [visibleGroups, setVisibleGroups] = useState<Record<DemographicGroup, boolean>>({
+  const [visibleGroups] = useState<Record<DemographicGroup, boolean>>({
     'Ideology': true,
     'Age': true,
     'Gender': true,
@@ -100,85 +92,81 @@ export const Biplot: React.FC<BiplotProps> = ({
     };
   }, [focusCore]);
 
-  // Scale functions (coordinate to SVG pixels)
-  const xScale = (val: number) => {
-    const range = bounds.xMax - bounds.xMin;
-    const factor = (val - bounds.xMin) / range;
-    return margin.left + factor * innerWidth;
+  // Scales: Map theoretical MCA coordinates to SVG pixels
+  const xScale = (val: number): number => {
+    return margin.left + ((val - bounds.xMin) / (bounds.xMax - bounds.xMin)) * innerWidth;
   };
 
-  const yScale = (val: number) => {
-    // Invert for SVG (top is min y, bottom is max y)
-    const range = bounds.yMax - bounds.yMin;
-    const factor = (val - bounds.yMin) / range;
-    return margin.top + (1 - factor) * innerHeight;
+  const yScale = (val: number): number => {
+    // In SVG, y=0 is at top, so higher Dim 2 coordinates should map to smaller pixel y
+    return margin.top + ((bounds.yMax - val) / (bounds.yMax - bounds.yMin)) * innerHeight;
   };
 
   const originX = xScale(0);
   const originY = yScale(0);
 
-  // Compute point radius
-  const getCategoryRadius = (cat: MCACategory) => {
-    if (sizeMetric === 'equal') return 8;
-    if (sizeMetric === 'contrib') {
-      // contrib ranges from ~0.5 to 22.62
-      const base = Math.sqrt(cat.contrib_total);
-      return Math.max(6, Math.min(22, base * 3.8));
-    }
-    // cos2 ranges from ~0.02 to 0.48
-    return Math.max(6, Math.min(22, Math.sqrt(cat.cos2_total) * 26));
-  };
-
-  // Filter items
+  // Filter Categories
   const filteredCategories = useMemo(() => {
     return mcaCategories.filter(cat => {
+      // Domain filter
       if (!visibleDomains[cat.domain]) return false;
-      if (activeQuadrantFilter && cat.quadrant !== activeQuadrantFilter) return false;
+
+      // Quadrant filter
+      if (activeQuadrantFilter !== null && cat.quadrant !== activeQuadrantFilter) return false;
+
+      // Search query filter
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
+        const query = searchQuery.toLowerCase();
         return (
-          cat.id.toLowerCase().includes(q) ||
-          cat.domain.toLowerCase().includes(q) ||
-          cat.description.toLowerCase().includes(q)
+          cat.id.toLowerCase().includes(query) ||
+          cat.domain.toLowerCase().includes(query) ||
+          cat.description.toLowerCase().includes(query)
         );
       }
+
       return true;
     });
   }, [visibleDomains, activeQuadrantFilter, searchQuery]);
 
+  // Filter Supplementary Variables
   const filteredSupplementary = useMemo(() => {
     if (!showSupplementary) return [];
+
     return mcaSupplementary.filter(sup => {
+      // Group filter
       if (!visibleGroups[sup.group]) return false;
-      if (activeQuadrantFilter && sup.quadrant !== activeQuadrantFilter) return false;
+
+      // Quadrant filter
+      if (activeQuadrantFilter !== null && sup.quadrant !== activeQuadrantFilter) return false;
+
+      // Search query filter
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
+        const query = searchQuery.toLowerCase();
         return (
-          sup.id.toLowerCase().includes(q) ||
-          sup.group.toLowerCase().includes(q) ||
-          sup.description.toLowerCase().includes(q)
+          sup.id.toLowerCase().includes(query) ||
+          sup.group.toLowerCase().includes(query) ||
+          sup.description.toLowerCase().includes(query)
         );
       }
+
       return true;
     });
   }, [showSupplementary, visibleGroups, activeQuadrantFilter, searchQuery]);
 
-  // Opposing pairs for connecting lines
+  // Paired items for connecting vector lines
   const pairedVectors = useMemo(() => {
     if (!showConnectingVectors) return [];
-    const pairs: Array<{ from: MCACategory; to: MCACategory; label: string }> = [];
-    const seen = new Set<string>();
+
+    const pairs: Array<{ from: MCACategory; to: MCACategory }> = [];
+    const processed = new Set<string>();
 
     mcaCategories.forEach(cat => {
-      if (cat.pairedWith && !seen.has(cat.id)) {
-        const partner = mcaCategories.find(c => c.id === cat.pairedWith);
-        if (partner) {
-          seen.add(cat.id);
-          seen.add(partner.id);
-          // Only show if at least one domain is visible
-          if (visibleDomains[cat.domain] || visibleDomains[partner.domain]) {
-            pairs.push({ from: cat, to: partner, label: cat.variableName });
-          }
+      if (cat.pairedWith && !processed.has(cat.id)) {
+        const opposing = mcaCategories.find(c => c.id === cat.pairedWith);
+        if (opposing && visibleDomains[cat.domain] && visibleDomains[opposing.domain]) {
+          pairs.push({ from: cat, to: opposing });
+          processed.add(cat.id);
+          processed.add(opposing.id);
         }
       }
     });
@@ -186,84 +174,103 @@ export const Biplot: React.FC<BiplotProps> = ({
     return pairs;
   }, [showConnectingVectors, visibleDomains]);
 
-  // Export SVG / PNG
+  // Calculate bubble radius based on active metric
+  const getCategoryRadius = (cat: MCACategory): number => {
+    if (sizeMetric === 'equal') return 6.5;
+
+    if (sizeMetric === 'cos2') {
+      // cos2 ranges from ~0.008 to ~0.435. Map to [4, 16]
+      const minR = 4;
+      const maxR = 17;
+      const normalized = Math.min(1, Math.max(0, cat.cos2_total / 0.5));
+      return minR + normalized * (maxR - minR);
+    }
+
+    // sizeMetric === 'contrib'
+    // contrib_total ranges from ~0.04 to ~23.09. Map to [4.5, 18]
+    const minR = 4.5;
+    const maxR = 19;
+    const normalized = Math.min(1, Math.max(0, cat.contrib_total / 24));
+    return minR + normalized * (maxR - minR);
+  };
+
+  // Check if item is highlighted
+  const hasAnyHighlight = highlightCategoryIds.length > 0 || highlightSupplementaryIds.length > 0;
+
+  const isItemActive = (id: string, isCat: boolean): boolean => {
+    if (selectedItem?.id === id) return true;
+    if (isCat && highlightCategoryIds.includes(id)) return true;
+    if (!isCat && highlightSupplementaryIds.includes(id)) return true;
+    return false;
+  };
+
+  // Axis grid ticks
+  const xTicks = [-0.6, -0.4, -0.2, 0.2, 0.4, 0.6, 0.8];
+  const yTicks = focusCore 
+    ? [-0.6, -0.4, -0.2, 0.2, 0.4, 0.6, 0.8]
+    : [-0.6, -0.4, -0.2, 0.2, 0.4, 0.6, 0.8, 1.2, 1.6, 2.0];
+
+  // SVG Export Handler
   const handleExportSvg = () => {
     if (!svgRef.current) return;
-    const svgData = new XMLSerializer().serializeToString(svgRef.current);
-    const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svgRef.current);
+    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `thai-political-mca-biplot.svg`;
+    link.download = `thai-mca-biplot-${new Date().toISOString().slice(0, 10)}.svg`;
     link.click();
     URL.revokeObjectURL(url);
   };
 
+  // PNG Export Handler
   const handleExportPng = () => {
     if (!svgRef.current) return;
-    const svgData = new XMLSerializer().serializeToString(svgRef.current);
-    const canvas = document.createElement('canvas');
-    canvas.width = width * 2; // High resolution retina
-    canvas.height = height * 2;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svgRef.current);
     const img = new Image();
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(svgBlob);
 
     img.onload = () => {
-      ctx.fillStyle = '#090d16';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const pngUrl = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = pngUrl;
-      link.download = 'thai-political-mca-biplot.png';
-      link.click();
+      const canvas = document.createElement('canvas');
+      canvas.width = width * 2;
+      canvas.height = height * 2;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.scale(2, 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0);
+        const pngUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = pngUrl;
+        link.download = `thai-mca-biplot-${new Date().toISOString().slice(0, 10)}.png`;
+        link.click();
+      }
       URL.revokeObjectURL(url);
     };
     img.src = url;
   };
 
-  // Helper to test if item is highlighted by story or selection
-  const isItemActive = (id: string, isCategory: boolean) => {
-    if (selectedItem?.id === id) return true;
-    if (isCategory && highlightCategoryIds.length > 0) {
-      return highlightCategoryIds.includes(id);
-    }
-    if (!isCategory && highlightSupplementaryIds.length > 0) {
-      return highlightSupplementaryIds.includes(id);
-    }
-    return false;
-  };
-
-  const hasAnyHighlight = 
-    selectedItem !== null || 
-    highlightCategoryIds.length > 0 || 
-    highlightSupplementaryIds.length > 0;
-
-  // Grid tick values
-  const xTicks = [-0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8];
-  const yTicks = focusCore ? [-0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8] : [-0.6, -0.3, 0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8];
-
   return (
     <div className="w-full flex flex-col space-y-4">
       {/* Control Bar */}
-      <div className="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
         {/* Metric Size Selector */}
         <div className="flex items-center space-x-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Crosshair className="w-3.5 h-3.5 text-rose-400" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+            <Crosshair className="w-3.5 h-3.5 text-blue-700" />
             Bubble Size:
           </span>
-          <div className="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+          <div className="inline-flex rounded-lg bg-slate-100 p-1 border border-slate-200 text-xs">
             <button
               onClick={() => setSizeMetric('contrib')}
-              className={`px-2.5 py-1 rounded-md transition font-medium ${
+              className={`px-2.5 py-1 rounded-md transition font-semibold ${
                 sizeMetric === 'contrib' 
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm' 
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-700 text-white shadow-sm' 
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
               title="Size bubbles by total percentage contribution to the two dimensions"
             >
@@ -271,10 +278,10 @@ export const Biplot: React.FC<BiplotProps> = ({
             </button>
             <button
               onClick={() => setSizeMetric('cos2')}
-              className={`px-2.5 py-1 rounded-md transition font-medium ${
+              className={`px-2.5 py-1 rounded-md transition font-semibold ${
                 sizeMetric === 'cos2' 
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm' 
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-700 text-white shadow-sm' 
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
               title="Size bubbles by Cos2 (quality of 2D representation)"
             >
@@ -282,10 +289,10 @@ export const Biplot: React.FC<BiplotProps> = ({
             </button>
             <button
               onClick={() => setSizeMetric('equal')}
-              className={`px-2.5 py-1 rounded-md transition font-medium ${
+              className={`px-2.5 py-1 rounded-md transition font-semibold ${
                 sizeMetric === 'equal' 
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm' 
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-700 text-white shadow-sm' 
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Uniform
@@ -297,10 +304,10 @@ export const Biplot: React.FC<BiplotProps> = ({
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setFocusCore(!focusCore)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition ${
               focusCore
-                ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
-                : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800'
+                ? 'bg-amber-50 border-amber-300 text-amber-800 shadow-sm'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
             }`}
             title="Toggle between full axis (with Leader: Bad outlier) and zoomed core space"
           >
@@ -310,10 +317,10 @@ export const Biplot: React.FC<BiplotProps> = ({
 
           <button
             onClick={() => setShowConnectingVectors(!showConnectingVectors)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition ${
               showConnectingVectors
-                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300'
-                : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:bg-slate-800'
+                ? 'bg-indigo-50 border-indigo-300 text-indigo-800 shadow-sm'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
             }`}
             title="Draw vector lines between opposing question responses"
           >
@@ -323,10 +330,10 @@ export const Biplot: React.FC<BiplotProps> = ({
 
           <button
             onClick={() => setShowSupplementary(!showSupplementary)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition ${
               showSupplementary
-                ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300'
-                : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:bg-slate-800'
+                ? 'bg-blue-50 border-blue-300 text-blue-800 shadow-sm'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
             }`}
             title="Toggle projected demographic & ideological categories"
           >
@@ -342,24 +349,24 @@ export const Biplot: React.FC<BiplotProps> = ({
             placeholder="Search attitude or demo..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-slate-950 border border-slate-800 text-xs px-3 py-1.5 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-rose-500/60 w-44"
+            className="bg-slate-50 border border-slate-200 text-xs px-3 py-1.5 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white w-44"
           />
 
-          <div className="flex items-center space-x-1 border-l border-slate-800 pl-2">
+          <div className="flex items-center space-x-1 border-l border-slate-200 pl-2">
             <button
               onClick={handleExportSvg}
-              className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs flex items-center gap-1"
+              className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1 shadow-sm"
               title="Download high-resolution SVG"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5 text-blue-700" />
               SVG
             </button>
             <button
               onClick={handleExportPng}
-              className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs flex items-center gap-1"
+              className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1 shadow-sm"
               title="Download rasterized PNG image"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5 text-blue-700" />
               PNG
             </button>
           </div>
@@ -369,7 +376,7 @@ export const Biplot: React.FC<BiplotProps> = ({
       {/* Domain & Filter Pills */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-slate-400 font-medium">Active Domains:</span>
+          <span className="text-xs text-slate-500 font-semibold">Active Domains:</span>
           {(Object.keys(DOMAIN_COLORS) as DomainType[]).map(domain => {
             const config = DOMAIN_COLORS[domain];
             const isVisible = visibleDomains[domain];
@@ -379,13 +386,13 @@ export const Biplot: React.FC<BiplotProps> = ({
                 onClick={() => setVisibleDomains(prev => ({ ...prev, [domain]: !prev[domain] }))}
                 className={`text-xs px-2.5 py-1 rounded-full border transition flex items-center gap-1.5 ${
                   isVisible 
-                    ? `${config.badgeBg} ${config.badgeBorder} ${config.text} font-medium shadow-sm` 
-                    : 'bg-slate-900 border-slate-800 text-slate-500 line-through opacity-60'
+                    ? `${config.badgeBg} ${config.badgeBorder} ${config.text} font-semibold shadow-xs` 
+                    : 'bg-white border-slate-200 text-slate-400 line-through opacity-60'
                 }`}
               >
                 <span 
                   className="w-2 h-2 rounded-full" 
-                  style={{ backgroundColor: isVisible ? config.fill : '#64748b' }} 
+                  style={{ backgroundColor: isVisible ? config.fill : '#94A3B8' }} 
                 />
                 {domain}
               </button>
@@ -395,13 +402,13 @@ export const Biplot: React.FC<BiplotProps> = ({
 
         {/* Quadrant Quick Filters */}
         <div className="flex items-center space-x-1.5">
-          <span className="text-xs text-slate-400 font-medium">Quadrant:</span>
+          <span className="text-xs text-slate-500 font-semibold">Quadrant:</span>
           <button
             onClick={() => onSelectQuadrant?.(null)}
             className={`text-xs px-2 py-0.5 rounded border transition ${
               activeQuadrantFilter === null 
-                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-semibold' 
-                : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                ? 'bg-blue-700 text-white border-blue-700 font-semibold shadow-xs' 
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
             }`}
           >
             All
@@ -414,8 +421,8 @@ export const Biplot: React.FC<BiplotProps> = ({
                 onClick={() => onSelectQuadrant?.(isSelected ? null : q)}
                 className={`text-xs px-2 py-0.5 rounded border transition ${
                   isSelected 
-                    ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-semibold shadow' 
-                    : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                    ? 'bg-blue-700 text-white border-blue-700 font-semibold shadow-xs' 
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                 }`}
                 title={`Filter to Quadrant ${q}: ${QUADRANT_DEFINITIONS[q as 1|2|3|4].title}`}
               >
@@ -427,7 +434,7 @@ export const Biplot: React.FC<BiplotProps> = ({
       </div>
 
       {/* Main SVG Visualization Canvas */}
-      <div className="relative bg-slate-950 border border-slate-800/90 rounded-2xl shadow-2xl overflow-hidden p-2">
+      <div className="relative bg-[#FAFCFF] border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-2">
         <svg
           ref={svgRef}
           viewBox={`0 0 ${width} ${height}`}
@@ -436,24 +443,6 @@ export const Biplot: React.FC<BiplotProps> = ({
           aria-label="Refined Multiple Correspondence Analysis Biplot for Thai Political Values"
         >
           <defs>
-            {/* Subtle quadrant background gradients */}
-            <linearGradient id="q1Gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#10B981" stopOpacity="0.02" />
-              <stop offset="100%" stopColor="#10B981" stopOpacity="0.07" />
-            </linearGradient>
-            <linearGradient id="q2Gradient" x1="100%" y1="100%" x2="0%" y2="0%">
-              <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.02" />
-              <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.07" />
-            </linearGradient>
-            <linearGradient id="q3Gradient" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#F43F5E" stopOpacity="0.02" />
-              <stop offset="100%" stopColor="#F43F5E" stopOpacity="0.07" />
-            </linearGradient>
-            <linearGradient id="q4Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#A855F7" stopOpacity="0.02" />
-              <stop offset="100%" stopColor="#A855F7" stopOpacity="0.07" />
-            </linearGradient>
-
             {/* Marker arrow for connecting vectors */}
             <marker
               id="vectorArrow"
@@ -464,7 +453,7 @@ export const Biplot: React.FC<BiplotProps> = ({
               markerHeight="6"
               orient="auto-start-reverse"
             >
-              <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748B" fillOpacity="0.6" />
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#94A3B8" fillOpacity="0.7" />
             </marker>
           </defs>
 
@@ -474,7 +463,7 @@ export const Biplot: React.FC<BiplotProps> = ({
             y={margin.top}
             width={width - margin.right - originX}
             height={originY - margin.top}
-            fill="url(#q1Gradient)"
+            fill="rgba(29, 78, 216, 0.035)"
             opacity={activeQuadrantFilter === null || activeQuadrantFilter === 1 ? 1 : 0.2}
           />
           <rect
@@ -482,7 +471,7 @@ export const Biplot: React.FC<BiplotProps> = ({
             y={margin.top}
             width={originX - margin.left}
             height={originY - margin.top}
-            fill="url(#q2Gradient)"
+            fill="rgba(217, 119, 6, 0.03)"
             opacity={activeQuadrantFilter === null || activeQuadrantFilter === 2 ? 1 : 0.2}
           />
           <rect
@@ -490,7 +479,7 @@ export const Biplot: React.FC<BiplotProps> = ({
             y={originY}
             width={originX - margin.left}
             height={height - margin.bottom - originY}
-            fill="url(#q3Gradient)"
+            fill="rgba(220, 38, 38, 0.035)"
             opacity={activeQuadrantFilter === null || activeQuadrantFilter === 3 ? 1 : 0.2}
           />
           <rect
@@ -498,47 +487,47 @@ export const Biplot: React.FC<BiplotProps> = ({
             y={originY}
             width={width - margin.right - originX}
             height={height - margin.bottom - originY}
-            fill="url(#q4Gradient)"
+            fill="rgba(79, 70, 229, 0.03)"
             opacity={activeQuadrantFilter === null || activeQuadrantFilter === 4 ? 1 : 0.2}
           />
 
           {/* Quadrant Descriptive Labels in Corners */}
-          <g className="text-xs pointer-events-none select-none opacity-40">
+          <g className="text-xs pointer-events-none select-none opacity-60">
             {/* Q1 Top-Right */}
-            <text x={width - margin.right - 10} y={margin.top + 22} textAnchor="end" fill="#10B981" fontWeight="700" fontSize="13">
+            <text x={width - margin.right - 10} y={margin.top + 22} textAnchor="end" fill="#1D4ED8" fontWeight="700" fontSize="13">
               Q1: Progressive Anti-Authoritarian
             </text>
-            <text x={width - margin.right - 10} y={margin.top + 38} textAnchor="end" fill="#94A3B8" fontSize="10">
+            <text x={width - margin.right - 10} y={margin.top + 38} textAnchor="end" fill="#64748B" fontSize="10">
               Anti-Military • Gender Equality • Anti-Corruption
             </text>
 
             {/* Q2 Top-Left */}
-            <text x={margin.left + 10} y={margin.top + 22} textAnchor="start" fill="#F59E0B" fontWeight="700" fontSize="13">
+            <text x={margin.left + 10} y={margin.top + 22} textAnchor="start" fill="#D97706" fontWeight="700" fontSize="13">
               Q2: Anti-Authoritarian Traditionalists
             </text>
-            <text x={margin.left + 10} y={margin.top + 38} textAnchor="start" fill="#94A3B8" fontSize="10">
+            <text x={margin.left + 10} y={margin.top + 38} textAnchor="start" fill="#64748B" fontSize="10">
               Radical Change • Self-Reliance • Moral Conservatism
             </text>
 
             {/* Q3 Bottom-Left */}
-            <text x={margin.left + 10} y={height - margin.bottom - 26} textAnchor="start" fill="#F43F5E" fontWeight="700" fontSize="13">
+            <text x={margin.left + 10} y={height - margin.bottom - 26} textAnchor="start" fill="#DC2626" fontWeight="700" fontSize="13">
               Q3: Patriarchal Paternalism & Order
             </text>
-            <text x={margin.left + 10} y={height - margin.bottom - 12} textAnchor="start" fill="#94A3B8" fontSize="10">
+            <text x={margin.left + 10} y={height - margin.bottom - 12} textAnchor="start" fill="#64748B" fontSize="10">
               Pro-Military • Strong Leader • Traditional Hierarchy
             </text>
 
             {/* Q4 Bottom-Right */}
-            <text x={width - margin.right - 10} y={height - margin.bottom - 26} textAnchor="end" fill="#A855F7" fontWeight="700" fontSize="13">
+            <text x={width - margin.right - 10} y={height - margin.bottom - 26} textAnchor="end" fill="#4F46E5" fontWeight="700" fontSize="13">
               Q4: Paternalist Modernizers & Welfare
             </text>
-            <text x={width - margin.right - 10} y={height - margin.bottom - 12} textAnchor="end" fill="#94A3B8" fontSize="10">
+            <text x={width - margin.right - 10} y={height - margin.bottom - 12} textAnchor="end" fill="#64748B" fontSize="10">
               State Welfare • LGBTQ+ Autonomy • Gradual Reform
             </text>
           </g>
 
           {/* Minor Grid Lines */}
-          <g stroke="#1E293B" strokeWidth="1" strokeDasharray="3,3">
+          <g stroke="#E2E8F0" strokeWidth="1" strokeDasharray="3,3">
             {xTicks.map(val => (
               <line 
                 key={`xtick-${val}`} 
@@ -560,7 +549,7 @@ export const Biplot: React.FC<BiplotProps> = ({
           </g>
 
           {/* Major Zero Axes (Crosshairs) */}
-          <g stroke="#475569" strokeWidth="1.5">
+          <g stroke="#94A3B8" strokeWidth="1.5">
             {/* X-axis (Dim 1 = 0) */}
             <line 
               x1={margin.left} 
@@ -578,7 +567,7 @@ export const Biplot: React.FC<BiplotProps> = ({
           </g>
 
           {/* Axis Labels & Values */}
-          <g fontSize="10" fill="#64748B" fontFamily="monospace">
+          <g fontSize="10" fill="#94A3B8" fontFamily="monospace">
             {xTicks.map(val => (
               <text key={`xval-${val}`} x={xScale(val)} y={height - margin.bottom + 16} textAnchor="middle">
                 {val > 0 ? `+${val.toFixed(1)}` : val.toFixed(1)}
@@ -598,7 +587,7 @@ export const Biplot: React.FC<BiplotProps> = ({
               x={(margin.left + width - margin.right) / 2}
               y={height - 16}
               textAnchor="middle"
-              className="text-xs font-semibold fill-slate-300"
+              className="text-xs font-bold fill-slate-800"
             >
               Dimension 1 ({mcaVariance.dim1}% Inertia) — Progressive Liberalism & Anti-Corruption vs Traditional Conservatism
             </text>
@@ -607,7 +596,7 @@ export const Biplot: React.FC<BiplotProps> = ({
             <text
               transform={`rotate(-90) translate(${-(margin.top + height - margin.bottom) / 2}, 20)`}
               textAnchor="middle"
-              className="text-xs font-semibold fill-slate-300"
+              className="text-xs font-bold fill-slate-800"
             >
               Dimension 2 ({mcaVariance.dim2}% Inertia) — Democratic Anti-Militarism vs Authoritarian Paternalism
             </text>
@@ -633,10 +622,10 @@ export const Biplot: React.FC<BiplotProps> = ({
                   y1={y1}
                   x2={x2}
                   y2={y2}
-                  stroke={isPairActive ? '#F43F5E' : '#475569'}
+                  stroke={isPairActive ? '#DC2626' : '#94A3B8'}
                   strokeWidth={isPairActive ? 2 : 1.2}
                   strokeDasharray="4,4"
-                  opacity={isPairActive ? 0.9 : hasAnyHighlight ? 0.15 : 0.45}
+                  opacity={isPairActive ? 0.95 : hasAnyHighlight ? 0.2 : 0.6}
                 />
               </g>
             );
@@ -658,7 +647,7 @@ export const Biplot: React.FC<BiplotProps> = ({
                 stroke={DEMOGRAPHIC_COLORS[sup.group].fill}
                 strokeWidth={isActive ? 2 : 1}
                 strokeDasharray="3,3"
-                opacity={isActive ? 0.9 : hasAnyHighlight ? 0.1 : 0.3}
+                opacity={isActive ? 0.95 : hasAnyHighlight ? 0.15 : 0.4}
               />
             );
           })}
@@ -673,8 +662,8 @@ export const Biplot: React.FC<BiplotProps> = ({
             const size = 8;
 
             const opacity = hasAnyHighlight 
-              ? (isActive || isHovered ? 1 : 0.2)
-              : 0.85;
+              ? (isActive || isHovered ? 1 : 0.25)
+              : 0.9;
 
             return (
               <g
@@ -709,9 +698,9 @@ export const Biplot: React.FC<BiplotProps> = ({
                 <polygon
                   points={`${cx},${cy - size - (isActive ? 3 : 0)} ${cx + size + (isActive ? 3 : 0)},${cy} ${cx},${cy + size + (isActive ? 3 : 0)} ${cx - size - (isActive ? 3 : 0)},${cy}`}
                   fill={config.fill}
-                  fillOpacity={0.8}
+                  fillOpacity={0.85}
                   stroke="#FFFFFF"
-                  strokeWidth={isActive ? 2.5 : 1.2}
+                  strokeWidth={isActive ? 2.5 : 1.5}
                   opacity={opacity}
                 />
 
@@ -721,10 +710,14 @@ export const Biplot: React.FC<BiplotProps> = ({
                   y={cy - size - 5}
                   textAnchor="middle"
                   fontSize="11"
-                  fontWeight={isActive ? "700" : "500"}
-                  fill={isActive ? "#FFFFFF" : config.fill}
+                  fontWeight={isActive ? "700" : "600"}
+                  fill={config.fill}
+                  stroke="#FFFFFF"
+                  strokeWidth="3"
+                  paintOrder="stroke"
+                  strokeLinejoin="round"
                   opacity={opacity}
-                  className="pointer-events-none drop-shadow"
+                  className="pointer-events-none drop-shadow-xs"
                 >
                   {sup.id}
                 </text>
@@ -742,8 +735,8 @@ export const Biplot: React.FC<BiplotProps> = ({
             const config = DOMAIN_COLORS[cat.domain];
 
             const opacity = hasAnyHighlight 
-              ? (isActive || isHovered ? 1 : 0.2)
-              : 0.9;
+              ? (isActive || isHovered ? 1 : 0.25)
+              : 0.95;
 
             return (
               <g
@@ -796,9 +789,9 @@ export const Biplot: React.FC<BiplotProps> = ({
                   cy={cy}
                   r={radius}
                   fill={config.fill}
-                  fillOpacity={0.82}
+                  fillOpacity={0.88}
                   stroke="#FFFFFF"
-                  strokeWidth={isActive || isHovered ? 2.5 : 1.2}
+                  strokeWidth={isActive || isHovered ? 2.5 : 1.5}
                   opacity={opacity}
                   className="biplot-point"
                 />
@@ -812,16 +805,20 @@ export const Biplot: React.FC<BiplotProps> = ({
                   opacity={opacity}
                 />
 
-                {/* Text Label */}
+                {/* Text Label with crisp white halo */}
                 <text
                   x={cx}
                   y={cy + radius + 13}
                   textAnchor="middle"
                   fontSize="11"
-                  fontWeight={isActive || isHovered ? "700" : "500"}
-                  fill={isActive ? "#FFFFFF" : isHovered ? "#F8FAFC" : "#E2E8F0"}
+                  fontWeight={isActive || isHovered ? "700" : "600"}
+                  fill="#0F172A"
+                  stroke="#FFFFFF"
+                  strokeWidth="3.5"
+                  paintOrder="stroke"
+                  strokeLinejoin="round"
                   opacity={opacity}
-                  className="pointer-events-none drop-shadow-md"
+                  className="pointer-events-none drop-shadow-xs"
                 >
                   {cat.id}
                 </text>
@@ -833,48 +830,48 @@ export const Biplot: React.FC<BiplotProps> = ({
         {/* Hover / Tooltip Card Overlay */}
         {hoveredItem && tooltipPos && (
           <div
-            className="absolute z-30 pointer-events-none bg-slate-900/95 border border-slate-700/80 rounded-xl p-3 shadow-2xl backdrop-blur-md max-w-xs transition-all duration-75 text-xs text-slate-200"
+            className="absolute z-30 pointer-events-none bg-white border border-slate-200 rounded-xl p-3 shadow-xl max-w-xs transition-all duration-75 text-xs text-slate-800"
             style={{
               left: Math.min(width - 240, Math.max(16, tooltipPos.x + 12)),
               top: Math.min(height - 180, Math.max(16, tooltipPos.y + 12)),
             }}
           >
-            <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-800">
-              <span className="font-bold text-slate-100 text-sm">{hoveredItem.id}</span>
+            <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
+              <span className="font-bold text-slate-900 text-sm">{hoveredItem.id}</span>
               {'domain' in hoveredItem ? (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${DOMAIN_COLORS[hoveredItem.domain].badgeBg} ${DOMAIN_COLORS[hoveredItem.domain].text} border ${DOMAIN_COLORS[hoveredItem.domain].badgeBorder}`}>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${DOMAIN_COLORS[hoveredItem.domain].badgeBg} ${DOMAIN_COLORS[hoveredItem.domain].text} border ${DOMAIN_COLORS[hoveredItem.domain].badgeBorder}`}>
                   {hoveredItem.domain}
                 </span>
               ) : (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800 font-medium">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-semibold">
                   {hoveredItem.group}
                 </span>
               )}
             </div>
 
-            <p className="mt-1.5 text-slate-300 text-[11px] leading-relaxed">
+            <p className="mt-1.5 text-slate-600 text-[11px] leading-relaxed">
               {hoveredItem.description}
             </p>
 
-            <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-800/80 text-[11px]">
+            <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-[11px]">
               <div>
-                <span className="text-slate-500 block">Coordinates:</span>
-                <span className="font-mono text-slate-200">
+                <span className="text-slate-400 block">Coordinates:</span>
+                <span className="font-mono text-slate-900 font-semibold">
                   [{hoveredItem.dim1 > 0 ? `+${hoveredItem.dim1.toFixed(3)}` : hoveredItem.dim1.toFixed(3)}, {hoveredItem.dim2 > 0 ? `+${hoveredItem.dim2.toFixed(3)}` : hoveredItem.dim2.toFixed(3)}]
                 </span>
               </div>
 
               {'contrib_total' in hoveredItem ? (
                 <div>
-                  <span className="text-slate-500 block">Combined Contrib:</span>
-                  <span className="font-mono font-semibold text-rose-400">
+                  <span className="text-slate-400 block">Combined Contrib:</span>
+                  <span className="font-mono font-bold text-red-600">
                     {hoveredItem.contrib_total}%
                   </span>
                 </div>
               ) : (
                 <div>
-                  <span className="text-slate-500 block">V-Test (Dim 1 / 2):</span>
-                  <span className="font-mono text-cyan-400">
+                  <span className="text-slate-400 block">V-Test (Dim 1 / 2):</span>
+                  <span className="font-mono text-blue-700 font-semibold">
                     {hoveredItem.vtest_dim1 > 0 ? `+${hoveredItem.vtest_dim1}` : hoveredItem.vtest_dim1} / {hoveredItem.vtest_dim2 > 0 ? `+${hoveredItem.vtest_dim2}` : hoveredItem.vtest_dim2}
                   </span>
                 </div>
@@ -889,14 +886,14 @@ export const Biplot: React.FC<BiplotProps> = ({
       </div>
 
       {/* Legend & Guide Bar */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
+      <div className="bg-white border border-slate-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600 shadow-sm">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
+            <span className="w-3 h-3 rounded-full bg-red-600 inline-block" />
             <span>Active Survey Attitude</span>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rotate-45 bg-cyan-400 inline-block" />
+            <span className="w-2.5 h-2.5 rotate-45 bg-blue-600 inline-block" />
             <span>Projected Demographic Group</span>
           </div>
           <div className="flex items-center space-x-2">
@@ -905,7 +902,7 @@ export const Biplot: React.FC<BiplotProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center space-x-3 text-slate-400">
+        <div className="flex items-center space-x-3 text-slate-500">
           <span>Quadrant 1: Top-Right</span>
           <span>•</span>
           <span>Quadrant 2: Top-Left</span>
@@ -918,4 +915,3 @@ export const Biplot: React.FC<BiplotProps> = ({
     </div>
   );
 };
-

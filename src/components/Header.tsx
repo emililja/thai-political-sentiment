@@ -1,20 +1,16 @@
 import React from 'react';
 import { 
-  Sparkles, 
+  Users, 
   BookOpen, 
   Map, 
-  Compass, 
   BarChart2, 
-  Table2,
-  Share2,
-  ExternalLink,
-  Code2
+  Table2
 } from 'lucide-react';
 import { mcaVariance } from '../data/mcaData';
 
 interface HeaderProps {
-  activeTab: 'biplot' | 'stories' | 'analytics' | 'data';
-  onChangeTab: (tab: 'biplot' | 'stories' | 'analytics' | 'data') => void;
+  activeTab: 'biplot' | 'scatterplot' | 'analytics' | 'data';
+  onChangeTab: (tab: 'biplot' | 'scatterplot' | 'analytics' | 'data') => void;
   onOpenMethodology: () => void;
 }
 
@@ -24,37 +20,37 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMethodology
 }) => {
   return (
-    <header className="w-full border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md sticky top-0 z-40">
+    <header className="w-full border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Title & Context */}
         <div className="flex items-center space-x-3 text-center md:text-left">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 via-rose-500 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-950/50 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-red-600 flex items-center justify-center shadow-md shadow-blue-900/10 shrink-0">
             <span className="text-xl">🇹🇭</span>
           </div>
 
           <div>
             <div className="flex items-center justify-center md:justify-start space-x-2">
-              <h1 className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+              <h1 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
                 Thai Political Values & Societal Cleavages
               </h1>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 hidden sm:inline-block">
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 hidden sm:inline-block">
                 MCA Infographic
               </span>
             </div>
-            <p className="text-xs text-slate-400">
-              World Values Survey Wave 7 (Thailand Sample) • 28.3% Inertia Captured
+            <p className="text-xs text-slate-500">
+              World Values Survey Wave 7 (Thailand Sample) • {mcaVariance.total}% Inertia Captured
             </p>
           </div>
         </div>
 
         {/* View Tabs */}
-        <div className="inline-flex rounded-xl bg-slate-900 p-1 border border-slate-800 text-xs">
+        <div className="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200 text-xs">
           <button
             onClick={() => onChangeTab('biplot')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 ${
               activeTab === 'biplot'
-                ? 'bg-rose-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                ? 'bg-blue-700 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <Map className="w-3.5 h-3.5" />
@@ -62,23 +58,23 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <button
-            onClick={() => onChangeTab('stories')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 ${
-              activeTab === 'stories'
-                ? 'bg-rose-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            onClick={() => onChangeTab('scatterplot')}
+            className={`px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 ${
+              activeTab === 'scatterplot'
+                ? 'bg-blue-700 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            4 Core Revelations
+            <Users className="w-3.5 h-3.5" />
+            Respondent Scatterplot
           </button>
 
           <button
             onClick={() => onChangeTab('analytics')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 ${
               activeTab === 'analytics'
-                ? 'bg-rose-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                ? 'bg-blue-700 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <BarChart2 className="w-3.5 h-3.5" />
@@ -87,10 +83,10 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={() => onChangeTab('data')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 ${
               activeTab === 'data'
-                ? 'bg-rose-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                ? 'bg-blue-700 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <Table2 className="w-3.5 h-3.5" />
@@ -102,10 +98,10 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center space-x-2">
           <button
             onClick={onOpenMethodology}
-            className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition text-xs font-medium flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1.5 shadow-sm"
             title="Read research methodology and survey documentation"
           >
-            <BookOpen className="w-3.5 h-3.5 text-rose-400" />
+            <BookOpen className="w-3.5 h-3.5 text-blue-700" />
             Methodology
           </button>
 
@@ -113,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition"
+            className="p-2 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-sm"
             title="View on GitHub"
           >
             <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">

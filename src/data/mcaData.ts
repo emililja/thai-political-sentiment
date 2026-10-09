@@ -1,5 +1,5 @@
 import rawJson from '../../thai_values_mca.json';
-import { MCACategory, SupplementaryCategory, DomainType, DemographicGroup, StorySlide } from '../types/mca';
+import { MCACategory, SupplementaryCategory, DomainType, DemographicGroup, StorySlide, MCAIndividual, MCAScatterplotConfig } from '../types/mca';
 
 export const DOMAIN_COLORS: Record<DomainType, { 
   bg: string; 
@@ -10,36 +10,36 @@ export const DOMAIN_COLORS: Record<DomainType, {
   badgeBorder: string;
 }> = {
   'Regime & Authority': {
-    bg: 'bg-rose-500/10',
-    border: 'border-rose-500/30',
-    text: 'text-rose-400',
-    fill: '#F43F5E',
-    badgeBg: 'bg-rose-950/60',
-    badgeBorder: 'border-rose-800'
+    bg: 'bg-red-50',
+    border: 'border-red-200',
+    text: 'text-red-700',
+    fill: '#DC2626',
+    badgeBg: 'bg-red-100/80',
+    badgeBorder: 'border-red-300'
   },
   'Personal & LGBTQ+ Autonomy': {
-    bg: 'bg-violet-500/10',
-    border: 'border-violet-500/30',
-    text: 'text-violet-400',
-    fill: '#A855F7',
-    badgeBg: 'bg-violet-950/60',
-    badgeBorder: 'border-violet-800'
+    bg: 'bg-blue-50',
+    border: 'border-blue-200',
+    text: 'text-blue-700',
+    fill: '#1D4ED8',
+    badgeBg: 'bg-blue-100/80',
+    badgeBorder: 'border-blue-300'
   },
   'Gender Hierarchy': {
-    bg: 'bg-amber-500/10',
-    border: 'border-amber-500/30',
-    text: 'text-amber-400',
-    fill: '#F59E0B',
-    badgeBg: 'bg-amber-950/60',
-    badgeBorder: 'border-amber-800'
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    text: 'text-amber-800',
+    fill: '#D97706',
+    badgeBg: 'bg-amber-100/80',
+    badgeBorder: 'border-amber-300'
   },
   'Economy & Corruption': {
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/30',
-    text: 'text-emerald-400',
-    fill: '#10B981',
-    badgeBg: 'bg-emerald-950/60',
-    badgeBorder: 'border-emerald-800'
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-200',
+    text: 'text-emerald-800',
+    fill: '#059669',
+    badgeBg: 'bg-emerald-100/80',
+    badgeBorder: 'border-emerald-300'
   }
 };
 
@@ -50,28 +50,28 @@ export const DEMOGRAPHIC_COLORS: Record<DemographicGroup, {
   iconBg: string;
 }> = {
   'Ideology': {
-    border: 'border-cyan-500/40',
-    text: 'text-cyan-400',
-    fill: '#06B6D4',
-    iconBg: 'bg-cyan-950'
+    border: 'border-blue-200',
+    text: 'text-blue-700',
+    fill: '#1D4ED8',
+    iconBg: 'bg-blue-50'
   },
   'Age': {
-    border: 'border-pink-500/40',
-    text: 'text-pink-400',
-    fill: '#EC4899',
-    iconBg: 'bg-pink-950'
+    border: 'border-red-200',
+    text: 'text-red-700',
+    fill: '#DC2626',
+    iconBg: 'bg-red-50'
   },
   'Gender': {
-    border: 'border-sky-500/40',
-    text: 'text-sky-400',
-    fill: '#38BDF8',
-    iconBg: 'bg-sky-950'
+    border: 'border-sky-200',
+    text: 'text-sky-700',
+    fill: '#0284C7',
+    iconBg: 'bg-sky-50'
   },
   'Education': {
-    border: 'border-indigo-500/40',
-    text: 'text-indigo-400',
-    fill: '#6366F1',
-    iconBg: 'bg-indigo-950'
+    border: 'border-indigo-200',
+    text: 'text-indigo-700',
+    fill: '#4F46E5',
+    iconBg: 'bg-indigo-50'
   }
 };
 
@@ -282,10 +282,10 @@ export const QUADRANT_DEFINITIONS = {
     number: 1,
     title: 'Democratic Reform & Progressive Autonomy',
     subtitle: 'Anti-Military • Gender Equality • Anti-Corruption',
-    color: 'emerald',
+    color: 'blue',
     description: 'Strongly rejects military and strongman rule while championing gender equality, LGBTQ+ rights, state transparency, and institutional reform.',
-    bgColor: 'rgba(16, 185, 129, 0.05)',
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    bgColor: 'rgba(29, 78, 216, 0.04)',
+    borderColor: 'rgba(29, 78, 216, 0.25)',
   },
   2: {
     number: 2,
@@ -293,26 +293,26 @@ export const QUADRANT_DEFINITIONS = {
     subtitle: 'Radical Change • Self-Reliance • Moral Conservatism',
     color: 'amber',
     description: 'Demands radical disruption of state structures and values self-reliance over welfare, yet retains patriarchal gender roles and conservative cultural views.',
-    bgColor: 'rgba(245, 158, 11, 0.05)',
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    bgColor: 'rgba(217, 119, 6, 0.04)',
+    borderColor: 'rgba(217, 119, 6, 0.25)',
   },
   3: {
     number: 3,
     title: 'Patriarchal Paternalism & Order',
     subtitle: 'Pro-Military • Strong Leader • Traditional Hierarchy',
-    color: 'rose',
+    color: 'red',
     description: 'Endorses military governance and decisive strongman leadership as necessary guardians of national stability, paired with traditional gender hierarchies.',
-    bgColor: 'rgba(244, 63, 94, 0.05)',
-    borderColor: 'rgba(244, 63, 94, 0.3)',
+    bgColor: 'rgba(220, 38, 38, 0.04)',
+    borderColor: 'rgba(220, 38, 38, 0.25)',
   },
   4: {
     number: 4,
     title: 'Paternalist Modernizers & Welfare Seekers',
     subtitle: 'State Welfare • Social Autonomy • Gradual Reform',
-    color: 'violet',
+    color: 'indigo',
     description: 'Embraces progressive social autonomy (LGBTQ+ acceptance, same-sex parenting) and demands state welfare provision, while preferring gradual institutional change.',
-    bgColor: 'rgba(168, 85, 247, 0.05)',
-    borderColor: 'rgba(168, 85, 247, 0.3)',
+    bgColor: 'rgba(79, 70, 229, 0.04)',
+    borderColor: 'rgba(79, 70, 229, 0.25)',
   }
 };
 
@@ -372,9 +372,40 @@ export const mcaSupplementary: SupplementaryCategory[] = (rawJson.supplementary 
 });
 
 export const mcaVariance = {
-  dim1: rawJson.variance.dim1[0],
-  dim2: rawJson.variance.dim2[0],
-  total: Number((rawJson.variance.dim1[0] + rawJson.variance.dim2[0]).toFixed(2))
+  dim1: Array.isArray(rawJson.variance.dim1) ? rawJson.variance.dim1[0] : (rawJson.variance as any).dim1,
+  dim2: Array.isArray(rawJson.variance.dim2) ? rawJson.variance.dim2[0] : (rawJson.variance as any).dim2,
+  total: Number(((Array.isArray(rawJson.variance.dim1) ? rawJson.variance.dim1[0] : (rawJson.variance as any).dim1) + 
+                 (Array.isArray(rawJson.variance.dim2) ? rawJson.variance.dim2[0] : (rawJson.variance as any).dim2)).toFixed(2))
+};
+
+const unbox = (val: any) => (Array.isArray(val) ? val[0] : val);
+
+// Normalize individuals sample data
+export const mcaIndividuals: MCAIndividual[] = ((rawJson as any).individuals || []).map((ind: any) => ({
+  id: ind.id,
+  dim1: Number(ind.dim1),
+  dim2: Number(ind.dim2),
+  gender: ind.gender ?? null,
+  age_group: ind.age_group ?? null,
+  education: ind.education ?? null,
+  ideology: ind.ideology ?? null,
+  quadrant: determineQuadrant(ind.dim1, ind.dim2)
+}));
+
+// Normalize scatterplot config
+export const mcaScatterplotConfig: MCAScatterplotConfig = {
+  x: {
+    field: unbox((rawJson as any).scatterplot?.x?.field) || 'dim1',
+    label: unbox((rawJson as any).scatterplot?.x?.label) || 'Dim 1: Traditional Agrarian vs. Cosmopolitan Modernity',
+  },
+  y: {
+    field: unbox((rawJson as any).scatterplot?.y?.field) || 'dim2',
+    label: unbox((rawJson as any).scatterplot?.y?.label) || 'Dim 2: Regime Deference vs. Democratic Proceduralism',
+  },
+  color: {
+    field: unbox((rawJson as any).scatterplot?.color?.field) || 'age_group',
+    label: unbox((rawJson as any).scatterplot?.color?.label) || 'Age group',
+  }
 };
 
 export const STORY_SLIDES: StorySlide[] = [

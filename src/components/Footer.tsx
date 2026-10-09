@@ -2,10 +2,10 @@ import React from 'react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full border-t border-slate-800/80 bg-slate-950 py-8 text-xs text-slate-500">
+    <footer className="w-full border-t border-slate-200 bg-white py-8 text-xs text-slate-500 shadow-sm mt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          <p className="font-semibold text-slate-400">
+          <p className="font-semibold text-slate-800">
             Thai Political Values & Societal Cleavages • Multiple Correspondence Analysis
           </p>
           <p className="mt-1 text-[11px] text-slate-500">
@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-4 text-[11px]">
-          <span className="flex items-center gap-1.5 text-slate-400">
+          <span className="flex items-center gap-1.5 text-slate-600">
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
             Hosted on GitHub Pages
           </span>
@@ -27,4 +27,3 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
-

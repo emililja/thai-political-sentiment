@@ -8,17 +8,20 @@ export default {
     extend: {
       colors: {
         thai: {
-          navy: '#0A192F',
-          dark: '#0d131f',
-          card: '#162238',
-          border: '#243452',
-          red: '#E02424',
-          amber: '#F59E0B',
-          cyan: '#06B6D4',
-          purple: '#8B5CF6',
-          emerald: '#10B981',
-          gold: '#FBBF24',
-          rose: '#F43F5E'
+          offwhite: '#F8F9FA',
+          card: '#FFFFFF',
+          border: '#E2E8F0',
+          blue: '#1D4ED8',
+          royal: '#1E40AF',
+          navy: '#0F172A',
+          red: '#DC2626',
+          crimson: '#B91C1C',
+          amber: '#D97706',
+          cyan: '#0284C7',
+          purple: '#7C3AED',
+          emerald: '#059669',
+          gold: '#D97706',
+          rose: '#DC2626'
         }
       },
       fontFamily: {
@@ -30,4 +33,3 @@ export default {
   },
   plugins: [],
 }
-
