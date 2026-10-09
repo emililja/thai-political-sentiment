@@ -23,6 +23,7 @@ import {
   ZoomIn,
   ZoomOut
 } from 'lucide-react';
+import { downloadSvg, downloadPng } from '../utils/exportChart';
 
 type ColorByField = 'age_group' | 'education' | 'ideology' | 'gender';
 
@@ -201,6 +202,29 @@ export const RespondentScatterplot: React.FC = () => {
     document.body.removeChild(link);
   };
 
+  // SVG Export Handler
+  const handleExportSvg = () => {
+    if (!svgRef.current) return;
+    downloadSvg(
+      svgRef.current,
+      `thai-mca-respondents-${colorBy}-${new Date().toISOString().slice(0, 10)}`,
+      width,
+      height
+    );
+  };
+
+  // PNG Export Handler
+  const handleExportPng = () => {
+    if (!svgRef.current) return;
+    downloadPng(
+      svgRef.current,
+      `thai-mca-respondents-${colorBy}-${new Date().toISOString().slice(0, 10)}`,
+      width,
+      height,
+      2
+    );
+  };
+
   const currentPalette = COLOR_PALETTES[colorBy];
 
   return (
@@ -227,14 +251,30 @@ export const RespondentScatterplot: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center space-x-2 self-start lg:self-auto shrink-0">
+          <div className="flex flex-wrap items-center gap-2 self-start lg:self-auto shrink-0">
+            <button
+              onClick={handleExportSvg}
+              className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm"
+              title="Download high-resolution vector SVG of full scatterplot"
+            >
+              <Download className="w-3.5 h-3.5 text-blue-700" />
+              SVG
+            </button>
+            <button
+              onClick={handleExportPng}
+              className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm"
+              title="Download full high-resolution raster PNG (never cropped)"
+            >
+              <Download className="w-3.5 h-3.5 text-blue-700" />
+              PNG
+            </button>
             <button
               onClick={handleExportCSV}
-              className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center gap-2 shadow-sm"
+              className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm"
               title="Download filtered respondent coordinates as CSV"
             >
-              <Download className="w-4 h-4 text-blue-700" />
-              Export CSV
+              <Download className="w-3.5 h-3.5 text-blue-700" />
+              CSV
             </button>
           </div>
         </div>
@@ -354,6 +394,26 @@ export const RespondentScatterplot: React.FC = () => {
                     <RotateCcw className="w-3.5 h-3.5" />
                   </button>
                 </div>
+
+                {/* Quick Export in Toolbar */}
+                <div className="flex items-center space-x-1 border-l border-slate-200 pl-2">
+                  <button
+                    onClick={handleExportSvg}
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1 shadow-sm"
+                    title="Download high-resolution SVG"
+                  >
+                    <Download className="w-3.5 h-3.5 text-blue-700" />
+                    SVG
+                  </button>
+                  <button
+                    onClick={handleExportPng}
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1 shadow-sm"
+                    title="Download rasterized PNG image (full plot)"
+                  >
+                    <Download className="w-3.5 h-3.5 text-blue-700" />
+                    PNG
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -396,6 +456,9 @@ export const RespondentScatterplot: React.FC = () => {
             <div className="relative bg-[#FAFCFF] border border-slate-200 rounded-xl overflow-hidden shadow-inner">
               <svg
                 ref={svgRef}
+                xmlns="http://www.w3.org/2000/svg"
+                width={width}
+                height={height}
                 viewBox={`0 0 ${width} ${height}`}
                 className="w-full h-auto select-none"
                 style={{ maxHeight: '72vh' }}

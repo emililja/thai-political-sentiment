@@ -20,6 +20,7 @@ import {
   Sparkles,
   Maximize2
 } from 'lucide-react';
+import { downloadSvg, downloadPng } from '../utils/exportChart';
 
 interface BiplotProps {
   selectedItem: MCACategory | SupplementaryCategory | null;
@@ -213,45 +214,24 @@ export const Biplot: React.FC<BiplotProps> = ({
   // SVG Export Handler
   const handleExportSvg = () => {
     if (!svgRef.current) return;
-    const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(svgRef.current);
-    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `thai-mca-biplot-${new Date().toISOString().slice(0, 10)}.svg`;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadSvg(
+      svgRef.current,
+      `thai-mca-biplot-${new Date().toISOString().slice(0, 10)}`,
+      width,
+      height
+    );
   };
 
   // PNG Export Handler
   const handleExportPng = () => {
     if (!svgRef.current) return;
-    const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(svgRef.current);
-    const img = new Image();
-    const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(svgBlob);
-
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = width * 2;
-      canvas.height = height * 2;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.scale(2, 2);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0);
-        const pngUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = pngUrl;
-        link.download = `thai-mca-biplot-${new Date().toISOString().slice(0, 10)}.png`;
-        link.click();
-      }
-      URL.revokeObjectURL(url);
-    };
-    img.src = url;
+    downloadPng(
+      svgRef.current,
+      `thai-mca-biplot-${new Date().toISOString().slice(0, 10)}`,
+      width,
+      height,
+      2
+    );
   };
 
   return (
@@ -437,6 +417,9 @@ export const Biplot: React.FC<BiplotProps> = ({
       <div className="relative bg-[#FAFCFF] border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-2">
         <svg
           ref={svgRef}
+          xmlns="http://www.w3.org/2000/svg"
+          width={width}
+          height={height}
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-auto select-none"
           role="img"
@@ -587,7 +570,9 @@ export const Biplot: React.FC<BiplotProps> = ({
               x={(margin.left + width - margin.right) / 2}
               y={height - 16}
               textAnchor="middle"
-              className="text-xs font-bold fill-slate-800"
+              fill="#1E293B"
+              fontSize="12"
+              fontWeight="700"
             >
               Dimension 1 ({mcaVariance.dim1}% Inertia) — Progressive Liberalism & Anti-Corruption vs Traditional Conservatism
             </text>
@@ -596,7 +581,9 @@ export const Biplot: React.FC<BiplotProps> = ({
             <text
               transform={`rotate(-90) translate(${-(margin.top + height - margin.bottom) / 2}, 20)`}
               textAnchor="middle"
-              className="text-xs font-bold fill-slate-800"
+              fill="#1E293B"
+              fontSize="12"
+              fontWeight="700"
             >
               Dimension 2 ({mcaVariance.dim2}% Inertia) — Democratic Anti-Militarism vs Authoritarian Paternalism
             </text>

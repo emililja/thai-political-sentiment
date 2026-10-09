@@ -191,6 +191,47 @@ ind_coords <- as_tibble(res_mca$ind$coord[, 1:2]) %>%
     thai_mca_clean %>% select(Gender, Age_Group, Education, Ideology_LeftRight)
   )
 
+# Print the percentage of each demographic category in each Dim1/Dim2 quadrant.
+# Percentages are calculated within each category, excluding missing demographic
+# values. Respondents on either axis are assigned to the positive side.
+quadrant_data <- ind_coords %>%
+  mutate(
+    Quadrant = case_when(
+      dim1 >= 0 & dim2 >= 0 ~ "Dim1 + / Dim2 +",
+      dim1 <  0 & dim2 >= 0 ~ "Dim1 - / Dim2 +",
+      dim1 <  0 & dim2 <  0  ~ "Dim1 - / Dim2 -",
+      dim1 >= 0 & dim2 < 0  ~ "Dim1 + / Dim2 -"
+    )
+  ) %>%
+  pivot_longer(
+    cols = c(Gender, Age_Group, Education, Ideology_LeftRight),
+    names_to = "Demographic",
+    values_to = "Category"
+  ) %>%
+  filter(!is.na(Category)) %>%
+  count(Demographic, Category, Quadrant, name = "n") %>%
+  group_by(Demographic, Category) %>%
+  complete(
+    Quadrant = c(
+      "Dim1 + / Dim2 +",
+      "Dim1 - / Dim2 +",
+      "Dim1 - / Dim2 -",
+      "Dim1 + / Dim2 -"
+    ),
+    fill = list(n = 0)
+  ) %>%
+  mutate(
+    total = sum(n),
+    percentage = round(100 * n / total, 2)
+  ) %>%
+  ungroup()
+
+cat("\n=== PERCENTAGE OF EACH DEMOGRAPHIC CATEGORY BY MCA QUADRANT ===\n")
+quadrant_data %>%
+  select(Demographic, Category, Quadrant, n, percentage) %>%
+  arrange(Demographic, Category, Quadrant) %>%
+  print(n = Inf)
+
 # Preview distribution
 p_ind <- ggplot(ind_coords, aes(x = dim1, y = dim2)) +
   geom_density_2d_filled(alpha = 0.5) +
