@@ -119,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <a
-            href="https://github.com"
+            href="https://github.com/emililja/thai-political-sentiment"
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-sm"

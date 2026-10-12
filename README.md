@@ -91,7 +91,7 @@ The repository includes a ready-to-run GitHub Actions workflow in [`.github/work
    ```bash
    git add .
    git commit -m "feat: complete Thai political sentiment MCA infographic"
-   git remote add origin https://github.com/<your-username>/<your-repo-name>.git
+   git remote add origin https://github.com/emililja/thai-political-sentiment.git
    git branch -M main
    git push -u origin main
    ```
@@ -99,7 +99,7 @@ The repository includes a ready-to-run GitHub Actions workflow in [`.github/work
    - Go to **Settings** → **Pages**.
    - Under **Build and deployment** → **Source**, select **GitHub Actions**.
 3. Every commit to `main` will automatically build and publish the infographic to:
-   `https://<your-username>.github.io/<your-repo-name>/`
+   `https://emililja.github.io/thai-political-sentiment/`
 
 > **Note on Base Path**: `vite.config.ts` is configured with `base: './'`, ensuring that all assets load reliably without path issues on any repository name or custom domain.
 
